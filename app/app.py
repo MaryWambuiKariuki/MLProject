@@ -9,9 +9,17 @@ st.set_page_config(
 )
 
 # Load trained model
-model = joblib.load("../models/house_price_model.pkl")
-st.sidebar.title("Navigation")
+from pathlib import Path
+import joblib
 
+# Get the project root directory
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Build the full path to the model
+MODEL_PATH = BASE_DIR / "models" / "house_price_model.pkl"
+
+# Load the model
+model = joblib.load(MODEL_PATH)
 page = st.sidebar.radio(
     "Go to",
     [
@@ -146,6 +154,27 @@ elif page == "Model Performance":
         "28,061"
     )
 
+if st.button("Predict Price"):
+
+    input_data = pd.DataFrame({
+        "OverallQual": [overall_qual],
+        "GrLivArea": [gr_liv_area],
+        "GarageCars": [garage_cars],
+        "GarageArea": [garage_area],
+        "TotalBsmtSF": [total_bsmt],
+        "FullBath": [full_bath],
+        "YearBuilt": [year_built],
+        "TotRmsAbvGrd": [total_rooms],
+        "LotArea": [lot_area],
+        "Neighborhood": [neighborhood]
+    })
+
+    prediction = model.predict(input_data)
+
+    st.metric(
+    "Estimated House Price",
+    f"${prediction[0]:,.0f}"
+)
 elif page == "About":
 
     st.title("About This Project")
