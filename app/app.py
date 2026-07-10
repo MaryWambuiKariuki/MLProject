@@ -52,7 +52,7 @@ if page == "Home":
 
     st.title("House Price Prediction")
 
-    banner_path = Path(__file__).parent / "house.jpeg"
+    banner_path = Path(__file__).parent / "house.jpg"
 
     st.image(
         str(banner_path),
