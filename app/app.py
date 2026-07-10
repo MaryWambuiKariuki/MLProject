@@ -52,6 +52,13 @@ if page == "Home":
 
     st.title("House Price Prediction")
 
+    banner_path = Path(__file__).parent / "house.jpeg"
+
+    st.image(
+        str(banner_path),
+        use_container_width=True
+    )
+
     st.write(
         "Fill in the house details below and click **Predict Price**."
     )
