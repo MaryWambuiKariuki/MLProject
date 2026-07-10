@@ -1,8 +1,14 @@
-import joblib
-import pandas as pd
 import streamlit as st
-
+import pandas as pd
+import joblib
 from pathlib import Path
+
+st.set_page_config(
+    page_title="House Price Prediction",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
 def load_css():
     css_path = Path(__file__).parent / "style.css"
 
@@ -14,24 +20,13 @@ def load_css():
 
 load_css()
 
-st.set_page_config(
-    page_title="House Price Prediction",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# Load trained model
-from pathlib import Path
-import joblib
-
-# Get the project root directory
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Build the full path to the model
 MODEL_PATH = BASE_DIR / "models" / "house_price_model.pkl"
 
-# Load the model
 model = joblib.load(MODEL_PATH)
+
+st.sidebar.title("Navigation")
+
 page = st.sidebar.radio(
     "Go to",
     [
@@ -41,23 +36,24 @@ page = st.sidebar.radio(
     ]
 )
 
+st.sidebar.markdown("---")
+
 st.sidebar.success("Model: Gradient Boosting")
 
 st.sidebar.info("""
-Developer:
-Bobo
+**Developer:** Bobo
 
-Machine Learning Project
+**Dataset:** Ames Housing Dataset
 
-Dataset:
-Ames Housing Dataset
+**Algorithm:** Gradient Boosting Regressor
 """)
 
 if page == "Home":
+
     st.title("House Price Prediction")
 
     st.write(
-        "Enter the house details below and click **Predict Price**."
+        "Fill in the house details below and click **Predict Price**."
     )
 
     col1, col2 = st.columns(2)
@@ -145,6 +141,35 @@ if page == "Home":
             ]
         )
 
+    if st.button("Predict Price"):
+
+        input_data = pd.DataFrame({
+            "OverallQual": [overall_qual],
+            "GrLivArea": [gr_liv_area],
+            "GarageCars": [garage_cars],
+            "GarageArea": [garage_area],
+            "TotalBsmtSF": [total_bsmt],
+            "FullBath": [full_bath],
+            "YearBuilt": [year_built],
+            "TotRmsAbvGrd": [total_rooms],
+            "LotArea": [lot_area],
+            "Neighborhood": [neighborhood]
+        })
+
+        prediction = model.predict(input_data)
+
+        st.markdown(
+            f"""
+            <div class="prediction-box">
+                <h2>Estimated House Price</h2>
+                <p class="prediction-price">
+                    ${prediction[0]:,.0f}
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
 elif page == "Model Performance":
 
     st.title("Model Performance")
@@ -158,52 +183,66 @@ elif page == "Model Performance":
 
     col2.metric(
         "MAE",
-        "18,215"
+        "$18,215"
     )
 
     col3.metric(
         "RMSE",
-        "28,061"
+        "$28,061"
     )
 
-if st.button("Predict Price"):
+    st.markdown("---")
 
-    input_data = pd.DataFrame({
-        "OverallQual": [overall_qual],
-        "GrLivArea": [gr_liv_area],
-        "GarageCars": [garage_cars],
-        "GarageArea": [garage_area],
-        "TotalBsmtSF": [total_bsmt],
-        "FullBath": [full_bath],
-        "YearBuilt": [year_built],
-        "TotRmsAbvGrd": [total_rooms],
-        "LotArea": [lot_area],
-        "Neighborhood": [neighborhood]
-    })
+    st.write("""
+The Gradient Boosting Regression model achieved excellent performance
+on the Ames Housing dataset.
 
-    prediction = model.predict(input_data)
+- **R² Score:** 89.73%
+- **Mean Absolute Error:** $18,215
+- **Root Mean Squared Error:** $28,061
 
-    st.metric(
-    "Estimated House Price",
-    f"${prediction[0]:,.0f}"
-)
+These results indicate that the model explains almost 90% of the
+variation in house prices.
+""")
+
 elif page == "About":
 
     st.title("About This Project")
 
     st.write("""
-    ### House Price Prediction
+## House Price Prediction using Machine Learning
 
-    This project uses a Gradient Boosting Regressor
-    trained on the Ames Housing Dataset.
+This application predicts residential house prices using a
+Gradient Boosting Regression model trained on the Ames Housing Dataset.
 
-    Technologies Used
+### Technologies Used
 
-    - Python
-    - Pandas
-    - Scikit-learn
-    - Streamlit
-    - Joblib
+- Python
+- Pandas
+- Scikit-learn
+- Joblib
+- Streamlit
 
-    Developed by Bobo.
-    """)
+### Features
+
+- Predict house prices
+- Interactive user interface
+- Machine Learning model
+- Responsive layout
+
+### Developer
+
+**Bobo**
+""")
+
+st.markdown("---")
+
+st.markdown(
+    """
+    <div class="footer">
+        Developed by <strong>Bobo</strong><br>
+        House Price Prediction using Machine Learning
+    </div>
+    """,
+    unsafe_allow_html=True
+)
