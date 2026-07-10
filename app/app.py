@@ -1,3 +1,5 @@
+import joblib
+import pandas as pd
 import streamlit as st
 
 st.set_page_config(
@@ -6,10 +8,8 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# =========================
-# Sidebar
-# =========================
-
+# Load trained model
+model = joblib.load("../models/house_price_model.pkl")
 st.sidebar.title("Navigation")
 
 page = st.sidebar.radio(
@@ -20,7 +20,6 @@ page = st.sidebar.radio(
         "About"
     ]
 )
-
 
 st.sidebar.success("Model: Gradient Boosting")
 
@@ -35,18 +34,96 @@ Ames Housing Dataset
 """)
 
 if page == "Home":
-
     st.title("House Price Prediction")
 
-    st.write("""
-    Welcome!
+    st.write(
+        "Enter the house details below and click **Predict Price**."
+    )
 
-    This application predicts the selling price of a house using
-    Machine Learning.
+    col1, col2 = st.columns(2)
 
-    Simply enter the house details and click **Predict Price**.
-    """)
+    with col1:
 
+        overall_qual = st.slider(
+            "Overall Quality",
+            1,
+            10,
+            5
+        )
+
+        gr_liv_area = st.number_input(
+            "Above Ground Living Area (sq ft)",
+            min_value=300,
+            max_value=6000,
+            value=1500
+        )
+
+        garage_cars = st.slider(
+            "Garage Capacity",
+            0,
+            5,
+            2
+        )
+
+        garage_area = st.number_input(
+            "Garage Area (sq ft)",
+            min_value=0,
+            max_value=1500,
+            value=500
+        )
+
+        total_bsmt = st.number_input(
+            "Basement Area (sq ft)",
+            min_value=0,
+            max_value=4000,
+            value=900
+        )
+
+    with col2:
+
+        full_bath = st.slider(
+            "Full Bathrooms",
+            0,
+            4,
+            2
+        )
+
+        year_built = st.slider(
+            "Year Built",
+            1872,
+            2010,
+            2000
+        )
+
+        total_rooms = st.slider(
+            "Total Rooms Above Ground",
+            2,
+            15,
+            7
+        )
+
+        lot_area = st.number_input(
+            "Lot Area (sq ft)",
+            min_value=1000,
+            max_value=100000,
+            value=9000
+        )
+
+        neighborhood = st.selectbox(
+            "Neighborhood",
+            [
+                "NAmes",
+                "CollgCr",
+                "OldTown",
+                "Edwards",
+                "Somerst",
+                "NridgHt",
+                "Gilbert",
+                "Sawyer",
+                "NWAmes",
+                "BrkSide"
+            ]
+        )
 
 elif page == "Model Performance":
 
@@ -68,7 +145,6 @@ elif page == "Model Performance":
         "RMSE",
         "28,061"
     )
-
 
 elif page == "About":
 
